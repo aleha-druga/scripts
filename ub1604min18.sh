@@ -23,29 +23,31 @@ schedtool libxml2 libxml2-utils xsltproc lzop libc6-dev schedtool g++-multilib l
 gcc-multilib liblz4-* pngquant ncurses-dev texinfo gcc gperf patch libtool \
 automake g++ gawk subversion expat libexpat1-dev python-all-dev bc libcloog-isl-dev \
 libcap-dev autoconf libgmp-dev build-essential gcc-multilib g++-multilib pkg-config libmpc-dev libmpfr-dev lzma* \
-liblzma* w3m android-tools-adb maven ncftp htop imagemagick -y
+liblzma* w3m android-tools-adb maven ncftp htop imagemagick ccache -y
 echo Dependencies have been installed
 echo repo has been Downloaded!
-if [ ! "$(which adb)" == "" ];
-then
-echo Setting up USB Ports
-sudo curl --create-dirs -L -o /etc/udev/rules.d/51-android.rules -O -L https://raw.githubusercontent.com/snowdream/51-android/master/51-android.rules
-sudo chmod 644   /etc/udev/rules.d/51-android.rules
-sudo chown root /etc/udev/rules.d/51-android.rules
-sudo service udev restart
-adb kill-server
-sudo killall adb
-fi
 
-makeversion=$(make -v | head -1 | awk '{print $3}')
-if [ "${makeversion}" != "4.2.1" ];
-then
-echo "Installing make 4.2.1 instead of ${makeversion}"
-sudo install utils/make /usr/bin/
-fi
 echo "Installing repo"
-sudo install utils/repo /usr/bin/
-echo "Installing ccache 3.3.4"
-sudo install utils/ccache /usr/bin/
-echo "Installing ninja 1.7.2, please make sure your ROM includes the commit to use host ninja"
-sudo install utils/ninja /usr/bin/
+mkdir ~/bin
+PATH=~/bin:$PATH
+curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
+chmod a+x ~/bin/repo
+
+echo "Settings Git"
+export username="$1"
+if [ -z $username ];
+then
+echo -e "Please enter a user name"
+read username
+fi
+git config --global user.name "${username}"
+export useremail="$2"
+if [ -z $useremail ];
+then
+echo -e "Please enter a user email"
+read useremail
+fi
+git config --global user.email "${useremail}"
+
+echo "Set ccache"
+echo "export USE_CCACHE=1" >> ~/.bashrc

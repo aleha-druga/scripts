@@ -18,7 +18,7 @@ for merge_repos in $(grep 'remote="lite"' ./manifest/aosp/merge.xml  | awk '{pri
         merge_repos="build"
     fi
     git remote add aosp "${AOSP}/platform/$merge_repos"
-    git fetch aosp
+    git fetch aosp --quiet --tags
     git merge $aosp_tag --no-edit
     if [ $? -ne 0 ]; then
         echo "$merge_repos" >> ${LITE_PATH}/failed
